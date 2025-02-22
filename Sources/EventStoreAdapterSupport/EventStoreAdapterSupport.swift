@@ -156,5 +156,8 @@
 /// ```
 ///
 /// - Note: `enum` 以外に付与したり、`EventStoreAdapter.Event` への準拠がない場合はコンパイルエラーとなります。
-@attached(member, names: named(id), named(aggregateId), named(sequenceNumber), named(occurredAt), named(isCreated))
-public macro EventSupport() = #externalMacro(module: "EventStoreAdapterSupportMacro", type: "EventSupport")
+@attached(
+    member, names: named(id), named(aggregateId), named(sequenceNumber), named(occurredAt),
+    named(isCreated))
+public macro EventSupport() =
+    #externalMacro(module: "EventStoreAdapterSupportMacro", type: "EventSupport")

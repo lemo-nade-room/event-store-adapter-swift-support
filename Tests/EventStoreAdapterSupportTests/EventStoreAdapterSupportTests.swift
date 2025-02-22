@@ -25,7 +25,6 @@ import Testing
             }
             var value: UUID
         }
-        
 
         @EventSupport
         enum Event: EventStoreAdapter.Event {
@@ -63,10 +62,12 @@ import Testing
             occurredAt: ISO8601DateFormatter().date(from: "2022-01-01T00:00:00Z")!
         )
     )
-    
+
     // Assert
     #expect(event.id == UUID(uuidString: "00000000-0000-0000-0000-000000000000")!)
-    #expect(event.aggregateId == Account.Id(value: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!))
+    #expect(
+        event.aggregateId
+            == Account.Id(value: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!))
     #expect(event.sequenceNumber == 1)
     #expect(event.occurredAt == ISO8601DateFormatter().date(from: "2022-01-01T00:00:00Z")!)
     #expect(event.isCreated == true)

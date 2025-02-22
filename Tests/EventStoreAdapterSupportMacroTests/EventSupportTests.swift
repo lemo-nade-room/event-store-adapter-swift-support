@@ -92,7 +92,7 @@ struct EventSupportTests {
             """
         }
     }
-    
+
     @Test func アクセス修飾子がない場合はinternalで作成する() async throws {
         assertMacro {
             """

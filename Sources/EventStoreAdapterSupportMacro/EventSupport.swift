@@ -71,7 +71,9 @@ public struct EventSupport: MemberMacro {
         elements: [EnumCaseElementSyntax],
         accessModifier: DeclModifierSyntax?
     ) throws -> VariableDeclSyntax {
-        try VariableDeclSyntax("\(accessModifier?.name ?? "internal ")var \(raw: name): \(raw: typeName)") {
+        try VariableDeclSyntax(
+            "\(accessModifier?.name ?? "internal ")var \(raw: name): \(raw: typeName)"
+        ) {
             try SwitchExprSyntax("switch self") {
                 for element in elements {
                     SwitchCaseSyntax("case .\(element.name)(let event): event.\(raw: name)")
