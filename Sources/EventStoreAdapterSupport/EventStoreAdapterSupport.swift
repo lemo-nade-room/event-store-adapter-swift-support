@@ -1,15 +1,15 @@
 /// # EventSupport
 ///
 /// `EventStoreAdapter.Event` に準拠した `enum` に適用することで、
-/// イベントが持つべき共通プロパティ（`id`, `aggregateId`, `sequenceNumber`, `occurredAt`, `isCreated`）を自動生成するマクロです。
+/// イベントが持つべき共通プロパティ（`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`）を自動生成するマクロです。
 ///
 /// このマクロは以下の特徴があります:
 /// 1. **適用先:** `enum` のみが対象です。クラスや構造体には適用できません。
 /// 2. **型要件:** 適用先の `enum` は `EventStoreAdapter.Event` に準拠している必要があります。
 /// 3. **自動生成されるプロパティ:**
 ///    - `id: Self.Id`
-///    - `aggregateId: Self.AggregateId`
-///    - `sequenceNumber: Int`
+///    - `aid: Self.AID`
+///    - `seqNr: Int`
 ///    - `occurredAt: Date`
 ///    - `isCreated: Bool`
 ///
@@ -30,11 +30,11 @@
 /// // 何らかのAggregateの定義
 /// struct Account: Aggregate {
 ///     var id: Id
-///     var sequenceNumber: Int
+///     var seqNr: Int
 ///     var version: Int
 ///     var lastUpdatedAt: Date
 ///
-///     struct Id: AggregateId {
+///     struct AID: AggregateId {
 ///         static let name = "account"
 ///         init?(_ description: String) {
 ///             guard let value = UUID(uuidString: description) else {
@@ -58,7 +58,7 @@
 ///         // マクロが自動生成したプロパティが
 ///         // 参照するための型エイリアス
 ///         typealias Id = UUID
-///         typealias AggregateId = Account.Id
+///         typealias AID = Account.Id
 ///     }
 /// }
 ///
@@ -66,16 +66,16 @@
 /// struct AccountCreated: EventStoreAdapter.Event {
 ///     var id: UUID
 ///     var name: String
-///     var aggregateId: Account.Id
-///     var sequenceNumber: Int
+///     var aid: Account.AID
+///     var seqNr: Int
 ///     var occurredAt: Date
 ///     var isCreated: Bool { true }
 /// }
 ///
 /// struct AccountDeleted: EventStoreAdapter.Event {
 ///     var id: UUID
-///     var aggregateId: Account.Id
-///     var sequenceNumber: Int
+///     var aid: Account.AID
+///     var seqNr: Int
 ///     var occurredAt: Date
 ///     var isCreated: Bool { false }
 /// }
@@ -94,7 +94,7 @@
 ///     case deleted(AccountDeleted)
 ///
 ///     typealias Id = UUID
-///     typealias AggregateId = Account.Id
+///     typealias AID = Account.Id
 /// }
 /// ```
 ///
@@ -106,7 +106,7 @@
 ///     case deleted(AccountDeleted)
 ///
 ///     typealias Id = UUID
-///     typealias AggregateId = Account.Id
+///     typealias AID = Account.AID
 ///
 ///     internal var id: Self.Id {
 ///         switch self {
@@ -117,21 +117,21 @@
 ///         }
 ///     }
 ///
-///     internal var aggregateId: Self.AggregateId {
+///     internal var aid: Self.AID {
 ///         switch self {
 ///         case .created(let event):
-///             event.aggregateId
+///             event.aid
 ///         case .deleted(let event):
-///             event.aggregateId
+///             event.aid
 ///         }
 ///     }
 ///
-///     internal var sequenceNumber: Int {
+///     internal var seqNr: Int {
 ///         switch self {
 ///         case .created(let event):
-///             event.sequenceNumber
+///             event.seqNr
 ///         case .deleted(let event):
-///             event.sequenceNumber
+///             event.seqNr
 ///         }
 ///     }
 ///
@@ -157,7 +157,7 @@
 ///
 /// - Note: `enum` 以外に付与したり、`EventStoreAdapter.Event` への準拠がない場合はコンパイルエラーとなります。
 @attached(
-    member, names: named(id), named(aggregateId), named(sequenceNumber), named(occurredAt),
+    member, names: named(id), named(aid), named(seqNr), named(occurredAt),
     named(isCreated))
 public macro EventSupport() =
     #externalMacro(module: "EventStoreAdapterSupportMacro", type: "EventSupport")

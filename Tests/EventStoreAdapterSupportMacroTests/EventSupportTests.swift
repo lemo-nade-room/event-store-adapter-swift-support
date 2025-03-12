@@ -21,7 +21,7 @@ struct EventSupportTests {
                 case deleted(AccountDeleted)    
 
                 typealias Id = UUID
-                typealias AggregateId = UUID
+                typealias AID = UUID
             }
             """
         } expansion: {
@@ -32,7 +32,7 @@ struct EventSupportTests {
                 case deleted(AccountDeleted)    
 
                 typealias Id = UUID
-                typealias AggregateId = UUID
+                typealias AID = UUID
 
                 package var id: Self.Id {
                     switch self {
@@ -45,25 +45,25 @@ struct EventSupportTests {
                     }
                 }
 
-                package var aggregateId: Self.AggregateId {
+                package var aid: Self.AID {
                     switch self {
                     case .created(let event):
-                        event.aggregateId
+                        event.aid
                     case .updated(let event):
-                        event.aggregateId
+                        event.aid
                     case .deleted(let event):
-                        event.aggregateId
+                        event.aid
                     }
                 }
 
-                package var sequenceNumber: Int {
+                package var seqNr: Int {
                     switch self {
                     case .created(let event):
-                        event.sequenceNumber
+                        event.seqNr
                     case .updated(let event):
-                        event.sequenceNumber
+                        event.seqNr
                     case .deleted(let event):
-                        event.sequenceNumber
+                        event.seqNr
                     }
                 }
 
@@ -127,25 +127,25 @@ struct EventSupportTests {
                     }
                 }
 
-                internal var aggregateId: Self.AggregateId {
+                internal var aid: Self.AID {
                     switch self {
                     case .created(let event):
-                        event.aggregateId
+                        event.aid
                     case .updated(let event):
-                        event.aggregateId
+                        event.aid
                     case .deleted(let event):
-                        event.aggregateId
+                        event.aid
                     }
                 }
 
-                internal var sequenceNumber: Int {
+                internal var seqNr: Int {
                     switch self {
                     case .created(let event):
-                        event.sequenceNumber
+                        event.seqNr
                     case .updated(let event):
-                        event.sequenceNumber
+                        event.seqNr
                     case .deleted(let event):
-                        event.sequenceNumber
+                        event.seqNr
                     }
                 }
 

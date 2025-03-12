@@ -48,11 +48,11 @@ public struct EventSupport: MemberMacro {
                     accessModifier: accessModifier)),
             try DeclSyntax(
                 makeProperty(
-                    name: "aggregateId", typeName: "Self.AggregateId", elements: elements,
+                    name: "aid", typeName: "Self.AID", elements: elements,
                     accessModifier: accessModifier)),
             try DeclSyntax(
                 makeProperty(
-                    name: "sequenceNumber", typeName: "Int", elements: elements,
+                    name: "seqNr", typeName: "Int", elements: elements,
                     accessModifier: accessModifier)),
             try DeclSyntax(
                 makeProperty(
