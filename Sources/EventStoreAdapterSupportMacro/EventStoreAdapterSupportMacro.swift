@@ -3,5 +3,8 @@ import SwiftSyntaxMacros
 
 @main
 struct EventStoreAdapterSupportMacro: CompilerPlugin {
-    var providingMacros: [any Macro.Type] = [EventSupport.self]
+    var providingMacros: [any Macro.Type] = [
+        EventSupport.self,
+        ActorAggregate.self,
+    ]
 }

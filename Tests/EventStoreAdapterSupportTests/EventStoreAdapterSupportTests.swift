@@ -5,11 +5,19 @@ import Testing
 
 @Test func マクロが使用できる() async throws {
     // Arrange
-    struct Account: Aggregate {
+    @ActorAggregate
+    actor Account {
         var aid: AID
         var seqNr: Int
         var version: Int
         var lastUpdatedAt: Date
+
+        init(aid: AID, seqNr: Int, version: Int, lastUpdatedAt: Date) {
+            self.aid = aid
+            self.seqNr = seqNr
+            self.version = version
+            self.lastUpdatedAt = lastUpdatedAt
+        }
 
         struct AID: AggregateId {
             static let name = "account"
