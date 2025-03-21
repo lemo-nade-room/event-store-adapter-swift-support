@@ -7,14 +7,14 @@ import Testing
 @Suite(
     .macros(
         record: .missing,
-        macros: ["ActorAggregate": ActorAggregate.self]
+        macros: ["AggregateActor": AggregateActor.self]
     )
 )
-struct ActorAggregateTests {
+struct AggregateActorTests {
     @Test func LocalActor() async throws {
         assertMacro {
             """
-            @ActorAggregate
+            @AggregateActor
             public actor Account {
                 var aid: AID
                 var name: String

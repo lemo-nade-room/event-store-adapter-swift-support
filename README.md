@@ -14,7 +14,7 @@
 
 このライブラリが提供する主な機能は次のとおりです。
 
-1. **`@ActorAggregate` (Macro)**  
+1. **`@AggregateActor` (Macro)**  
    - Swift の `actor` に付与すると、  
      そのアクターの状態を表す **スナップショット用構造体** と **スナップショット取得/復元用のプロパティ・イニシャライザ** を自動的に生成します。  
    - スナップショット型は `EventStoreAdapter.Aggregate` に準拠するため、**エンティティの保存や復元**を簡素化します。
@@ -194,9 +194,9 @@ extension AccountEvent {
 
 ---
 
-### 2. `@ActorAggregate` マクロ
+### 2. `@AggregateActor` マクロ
 
-`@ActorAggregate` は、**Swift の `actor`** に付与し、スナップショット型 (`Snapshot`) や初期化メソッドを自動生成するマクロです。  
+`@AggregateActor` は、**Swift の `actor`** に付与し、スナップショット型 (`Snapshot`) や初期化メソッドを自動生成するマクロです。  
 Event Sourcing では **スナップショット**を使ってアクター (集約) の最新状態を保存・復元することがありますが、  
 このマクロを用いると煩雑なスナップショット用コードを自動的に生成できます。
 
@@ -207,7 +207,7 @@ import EventStoreAdapter
 import EventStoreAdapterSupport
 import Foundation
 
-@ActorAggregate
+@AggregateActor
 public actor UserAccount {
     // 以下のプロパティがスナップショット化される
     var aid: AID
@@ -231,7 +231,7 @@ public actor UserAccount {
     }
 
     // ------------------------------------
-    // @ActorAggregate により生成されるもの:
+    // @AggregateActor により生成されるもの:
     //
     // public struct Snapshot: EventStoreAdapter.Aggregate {
     //     public var aid: AID
@@ -280,7 +280,7 @@ public actor UserAccount {
 
 A. コンパイル時にエラーが発生します。マクロが適用できない旨のエラーメッセージが表示されます。
 
-### Q. `@ActorAggregate` で生成される `Snapshot` にはアクセスレベルを付けられる？
+### Q. `@AggregateActor` で生成される `Snapshot` にはアクセスレベルを付けられる？
 
 A. アクターに付与されている修飾子 (`public`, `internal` など) に準じて生成されます。  
 例えば、`public actor SomeActor` に適用すると、`public struct Snapshot` が生成されます。

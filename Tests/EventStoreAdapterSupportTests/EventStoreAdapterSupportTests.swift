@@ -5,7 +5,7 @@ import Testing
 
 @Test func マクロが使用できる() async throws {
     // Arrange
-    @ActorAggregate
+    @AggregateActor
     actor Account {
         var aid: AID
         var seqNr: Int

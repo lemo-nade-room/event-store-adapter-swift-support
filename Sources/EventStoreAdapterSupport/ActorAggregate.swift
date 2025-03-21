@@ -1,6 +1,6 @@
-/// # `ActorAggregate` Macro
+/// # `AggregateActor` Macro
 ///
-/// `@ActorAggregate` は、Swift の `actor` 宣言に対して自動的に初期化処理やスナップショット用の構造体を追加するためのマクロです。
+/// `@AggregateActor` は、Swift の `actor` 宣言に対して自動的に初期化処理やスナップショット用の構造体を追加するためのマクロです。
 /// CQRS + Event Sourcing の文脈で、**アクターが持つプロパティ**を利用してスナップショット型を生成し、
 /// アクターに「スナップショット取得用プロパティ (`snapshot`)」と「スナップショットから復元するための初期化メソッド (`init(snapshot:)`)」を追加します。
 ///
@@ -18,7 +18,7 @@
 /// `struct` や `class` など、`actor` 以外の宣言に付与すると、コンパイル エラーが発生します。
 ///
 /// ```swift
-/// @ActorAggregate
+/// @AggregateActor
 /// public actor UserAccount {
 ///     var aid: AID
 ///     var seqNr: Int
@@ -55,7 +55,7 @@
 /// import EventStoreAdapterSupport
 /// import Foundation
 ///
-/// @ActorAggregate
+/// @AggregateActor
 /// public actor UserAccount {
 ///     // このプロパティたちがスナップショットにも含まれる
 ///     var aid: AID
@@ -84,7 +84,7 @@
 ///     }
 ///
 ///     // ----------------------------
-///     // @ActorAggregate によって自動生成されるもの:
+///     // @AggregateActor によって自動生成されるもの:
 ///     //
 ///     // public struct Snapshot: EventStoreAdapter.Aggregate {
 ///     //     public var aid: AID
@@ -140,10 +140,10 @@
 ///
 /// - スナップショット構造体には、アクター内のすべてのストアドプロパティが含まれます（`private`, `fileprivate` スコープ含む）。
 ///   （Swift のマクロはソースコード変換の段階で動作するため、可視性制限を超えてプロパティへアクセスできます。）
-/// - `@ActorAggregate` が付与される `actor` にカスタムアクセサ（`get`, `set`, `willSet`, `didSet` など）を持つプロパティがある場合、マクロは対象外とします。
+/// - `@AggregateActor` が付与される `actor` にカスタムアクセサ（`get`, `set`, `willSet`, `didSet` など）を持つプロパティがある場合、マクロは対象外とします。
 ///   自動的にスナップショットへ追加されない点にご注意ください。
-/// - `ActorAggregate` は単一のアクターだけで使うケースを想定しています。
+/// - `AggregateActor` は単一のアクターだけで使うケースを想定しています。
 ///   継承関係や非常に複雑なアクター定義（ジェネリクス多用など）には、動作保証がありません。
 @attached(member, names: named(init), named(snapshot), named(Snapshot))
-public macro ActorAggregate() =
-    #externalMacro(module: "EventStoreAdapterSupportMacro", type: "ActorAggregate")
+public macro AggregateActor() =
+    #externalMacro(module: "EventStoreAdapterSupportMacro", type: "AggregateActor")

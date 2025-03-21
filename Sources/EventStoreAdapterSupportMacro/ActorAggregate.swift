@@ -1,7 +1,7 @@
 public import SwiftSyntax
 public import SwiftSyntaxMacros
 
-public struct ActorAggregate: MemberMacro {
+public struct AggregateActor: MemberMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingMembersOf declaration: some DeclGroupSyntax,
