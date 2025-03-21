@@ -24,44 +24,49 @@ public struct EventSupport: MemberMacro {
             .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
             .flatMap { $0.elements }
 
-        let accessLevelKeywords: Set<Keyword> = [
-            .open,
-            .package,
-            .public,
-            .internal,
-            .fileprivate,
-            .private,
-        ]
-        let accessModifier =
-            enumDecl.modifiers
-            .first {
-                accessLevelKeywords.map({ .keyword($0) })
-                    .contains(
-                        $0.name.tokenKind
-                    )
-            }
+        let accessLevel = detectAccessLevel(modifiers: enumDecl.modifiers)
 
         return [
             try DeclSyntax(
                 makeProperty(
-                    name: "id", typeName: "Self.Id", elements: elements,
-                    accessModifier: accessModifier)),
+                    name: "id",
+                    typeName: "Self.Id",
+                    elements: elements,
+                    accessLevel: accessLevel
+                )
+            ),
             try DeclSyntax(
                 makeProperty(
-                    name: "aid", typeName: "Self.AID", elements: elements,
-                    accessModifier: accessModifier)),
+                    name: "aid",
+                    typeName: "Self.AID",
+                    elements: elements,
+                    accessLevel: accessLevel
+                )
+            ),
             try DeclSyntax(
                 makeProperty(
-                    name: "seqNr", typeName: "Int", elements: elements,
-                    accessModifier: accessModifier)),
+                    name: "seqNr",
+                    typeName: "Int",
+                    elements: elements,
+                    accessLevel: accessLevel
+                )
+            ),
             try DeclSyntax(
                 makeProperty(
-                    name: "occurredAt", typeName: "Date", elements: elements,
-                    accessModifier: accessModifier)),
+                    name: "occurredAt",
+                    typeName: "Date",
+                    elements: elements,
+                    accessLevel: accessLevel
+                )
+            ),
             try DeclSyntax(
                 makeProperty(
-                    name: "isCreated", typeName: "Bool", elements: elements,
-                    accessModifier: accessModifier)),
+                    name: "isCreated",
+                    typeName: "Bool",
+                    elements: elements,
+                    accessLevel: accessLevel
+                )
+            ),
         ]
     }
 
@@ -69,10 +74,10 @@ public struct EventSupport: MemberMacro {
         name: String,
         typeName: String,
         elements: [EnumCaseElementSyntax],
-        accessModifier: DeclModifierSyntax?
+        accessLevel: AccessLevel
     ) throws -> VariableDeclSyntax {
         try VariableDeclSyntax(
-            "\(accessModifier?.name ?? "internal ")var \(raw: name): \(raw: typeName)"
+            "\(raw: accessLevel.rawValue) var \(raw: name): \(raw: typeName)"
         ) {
             try SwitchExprSyntax("switch self") {
                 for element in elements {
@@ -96,16 +101,3 @@ public struct EventSupport: MemberMacro {
         }
     }
 }
-
-private func fourCharacterCode(for characters: String) -> UInt32? {
-    guard characters.count == 4 else { return nil }
-
-    var result: UInt32 = 0
-    for character in characters {
-        result = result << 8
-        guard let asciiValue = character.asciiValue else { return nil }
-        result += UInt32(asciiValue)
-    }
-    return result
-}
-enum CustomError: Error { case message(String) }
