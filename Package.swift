@@ -18,6 +18,7 @@ let package = Package(
             url: "https://github.com/lemo-nade-room/event-store-adapter-swift.git", branch: "main"),
         .package(url: "https://github.com/swiftlang/swift-syntax", from: "600.0.0"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.0"),
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
