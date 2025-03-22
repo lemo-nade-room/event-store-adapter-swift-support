@@ -1,5 +1,5 @@
 {
-  "originHash" : "2d7c77c89b7fad2a68f76e351446730bd2b81b09d90a3f6c67fc089228ed37ec",
+  "originHash" : "1ee75fe0692793db58b9ebe6de4130e53d33db96abe19bc293ad5a861d7f340b",
   "pins" : [
     {
       "identity" : "aws-crt-swift",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/awslabs/aws-sdk-swift",
       "state" : {
-        "revision" : "2e87c4a0086926fb4d8dc3bf72e6bf3dd9dee9ef",
-        "version" : "1.2.36"
+        "revision" : "1f049fdc5e845b75be11a1ae7c2040fd305bbce9",
+        "version" : "1.2.43"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lemo-nade-room/event-store-adapter-swift.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "5a5916f9fd2c298c65f5f0266174128e97d6bf20"
+        "revision" : "cb6b5adbd575046e54c8f101ee6c9efb4af1b7c0",
+        "version" : "1.0.0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/smithy-lang/smithy-swift",
       "state" : {
-        "revision" : "6882dab91633cf86a1d0956078c458cd07732c52",
-        "version" : "0.121.0"
+        "revision" : "d2b74b108a82b606b68c5e79e62fde486da50437",
+        "version" : "0.124.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "a98e4be0dd9f0377a818f2198a2bc87bbd2bfcea",
-        "version" : "3.11.2"
+        "revision" : "a6ce32a18b81b04ce7e897d1d98df6eb2da04786",
+        "version" : "3.12.2"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "96a2f8a0fa41e9e09af4585e2724c4e825410b91",
-        "version" : "1.6.2"
+        "revision" : "3d8596ed08bd13520157f0355e35caed215ffbfa",
+        "version" : "1.6.3"
       }
     },
     {
