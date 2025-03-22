@@ -11,6 +11,8 @@ public struct AggregateActor: MemberMacro {
             throw Error.shouldBeActor
         }
 
+        let isDistributed = actorDecl.modifiers.map(\.name.tokenKind).contains(
+            .keyword(.distributed))
         let accessLevel = detectAccessLevel(modifiers: actorDecl.modifiers)
 
         let properties = actorDecl.memberBlock.members.compactMap { member -> Property? in
@@ -34,12 +36,19 @@ public struct AggregateActor: MemberMacro {
         return [
             try DeclSyntax(makeSnapshotStructure(accessLevel: accessLevel, properties: properties)),
             try DeclSyntax(
-                makeSnapshotComputedProperty(accessLevel: accessLevel, properties: properties)),
-            try DeclSyntax(makeInitializer(accessLevel: accessLevel, properties: properties)),
+                makeSnapshotComputedProperty(
+                    accessLevel: accessLevel,
+                    properties: properties,
+                    isDistributed: isDistributed
+                )
+            ),
+            try DeclSyntax(
+                makeInitializer(
+                    accessLevel: accessLevel, properties: properties, isDistributed: isDistributed)),
         ]
     }
 
-    static func makeSnapshotStructure(accessLevel: AccessLevel, properties: [Property])
+    private static func makeSnapshotStructure(accessLevel: AccessLevel, properties: [Property])
         throws -> StructDeclSyntax
     {
         try StructDeclSyntax(
@@ -58,20 +67,39 @@ public struct AggregateActor: MemberMacro {
         }
     }
 
-    static func makeSnapshotComputedProperty(accessLevel: AccessLevel, properties: [Property])
+    private static func makeSnapshotComputedProperty(
+        accessLevel: AccessLevel, properties: [Property], isDistributed: Bool
+    )
         throws -> VariableDeclSyntax
     {
-        try VariableDeclSyntax("\(raw: accessLevel.rawValue) var snapshot: Snapshot") {
+        try VariableDeclSyntax(
+            "\(raw: accessLevel.rawValue) \(raw: distributedModifier(isDistributed: isDistributed))var snapshot: Snapshot"
+        ) {
             ".init(\(properties.labeledExprListSyntax))"
         }
     }
 
-    static func makeInitializer(accessLevel: AccessLevel, properties: [Property]) throws
+    private static func makeInitializer(
+        accessLevel: AccessLevel,
+        properties: [Property],
+        isDistributed: Bool
+    ) throws
         -> InitializerDeclSyntax
     {
-        try InitializerDeclSyntax("\(raw: accessLevel.rawValue) init(snapshot: Snapshot)") {
-            for property in properties {
-                "self.\(property.identifier) = snapshot.\(property.identifier)"
+        if isDistributed {
+            try InitializerDeclSyntax(
+                "\(raw: accessLevel.rawValue) init(actorSystem: ActorSystem, snapshot: Snapshot)"
+            ) {
+                "self.actorSystem = actorSystem"
+                for property in properties {
+                    "self.\(property.identifier) = snapshot.\(property.identifier)"
+                }
+            }
+        } else {
+            try InitializerDeclSyntax("\(raw: accessLevel.rawValue) init(snapshot: Snapshot)") {
+                for property in properties {
+                    "self.\(property.identifier) = snapshot.\(property.identifier)"
+                }
             }
         }
     }
@@ -86,5 +114,9 @@ public struct AggregateActor: MemberMacro {
             }
         }
 
+    }
+
+    private static func distributedModifier(isDistributed: Bool) -> String {
+        isDistributed ? "distributed " : ""
     }
 }
