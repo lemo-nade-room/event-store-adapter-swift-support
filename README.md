@@ -15,9 +15,10 @@
 このライブラリが提供する主な機能は次のとおりです。
 
 1. **`@AggregateActor` (Macro)**  
-   - Swift の `actor` に付与すると、  
+   - Swift の `actor` や `distributed actor` に付与すると、  
      そのアクターの状態を表す **スナップショット用構造体** と **スナップショット取得/復元用のプロパティ・イニシャライザ** を自動的に生成します。  
-   - スナップショット型は `EventStoreAdapter.Aggregate` に準拠するため、**エンティティの保存や復元**を簡素化します。
+   - スナップショット型は `EventStoreAdapter.Aggregate` に準拠するため、**エンティティの保存や復元**を簡素化します。  
+   - `distributed actor` に適用した場合は、`distributed var snapshot` や `init(actorSystem:..., snapshot:)` が自動的に追加され、分散アクターでも容易にスナップショットが扱えるようになります。
 
 2. **`@EventSupport` (Macro)**  
    - `EventStoreAdapter.Event` に準拠した `enum` に付与すると、  
@@ -196,11 +197,12 @@ extension AccountEvent {
 
 ### 2. `@AggregateActor` マクロ
 
-`@AggregateActor` は、**Swift の `actor`** に付与し、スナップショット型 (`Snapshot`) や初期化メソッドを自動生成するマクロです。  
+`@AggregateActor` は、**Swift の `actor` または `distributed actor`** に付与し、スナップショット型 (`Snapshot`) や
+初期化メソッドを自動生成するマクロです。  
 Event Sourcing では **スナップショット**を使ってアクター (集約) の最新状態を保存・復元することがありますが、  
 このマクロを用いると煩雑なスナップショット用コードを自動的に生成できます。
 
-#### 使用例
+#### 使用例（ローカル Actor）
 
 ```swift
 import EventStoreAdapter
@@ -208,14 +210,12 @@ import EventStoreAdapterSupport
 import Foundation
 
 @AggregateActor
-public actor UserAccount {
-    // 以下のプロパティがスナップショット化される
+public actor Account {
     var aid: AID
     var seqNr: Int
     var version: Int
     var lastUpdatedAt: Date
 
-    // 通常のイニシャライザ
     public init(aid: AID, seqNr: Int, version: Int, lastUpdatedAt: Date) {
         self.aid = aid
         self.seqNr = seqNr
@@ -223,54 +223,106 @@ public actor UserAccount {
         self.lastUpdatedAt = lastUpdatedAt
     }
 
-    // 集約ID
     public struct AID: AggregateId {
-        public static let name = "user_account"
+        public static let name = "account"
         public var value: UUID
         // ...
     }
 
-    // ------------------------------------
-    // @AggregateActor により生成されるもの:
+    // @AggregateActor により以下が自動生成される:
     //
-    // public struct Snapshot: EventStoreAdapter.Aggregate {
-    //     public var aid: AID
-    //     public var seqNr: Int
-    //     public var version: Int
-    //     public var lastUpdatedAt: Date
-    //
-    //     public init(...){...}
-    // }
-    //
-    // public var snapshot: Snapshot {
-    //     .init(aid: aid, seqNr: seqNr, version: version, lastUpdatedAt: lastUpdatedAt)
-    // }
-    //
-    // public init(snapshot: Snapshot) {
-    //     self.aid = snapshot.aid
-    //     self.seqNr = snapshot.seqNr
-    //     self.version = snapshot.version
-    //     self.lastUpdatedAt = snapshot.lastUpdatedAt
-    // }
-    // ------------------------------------
+    // public struct Snapshot: EventStoreAdapter.Aggregate { ... }
+    // public var snapshot: Snapshot { ... }
+    // public init(snapshot: Snapshot) { ... }
 }
+
+// ---- スナップショットの保存・復元例 ----
+
+let actor = Account(
+    aid: .init(value: UUID()), 
+    seqNr: 1, 
+    version: 1, 
+    lastUpdatedAt: Date()
+)
+// スナップショット取り出し
+let snapshot = actor.snapshot
+
+// 復元時は:
+let restored = Account(snapshot: snapshot)
+// これで actor の状態が snapshot と同じになる
 ```
 
-上記のように、**アクター内部のストアドプロパティ**を使って `Snapshot` 構造体を自動生成し、  
-`actor` からは `snapshot` プロパティでその時点の状態を取得できるようになります。  
-また、`init(snapshot:)` によって、スナップショットを使ったアクターの **復元**（リストア）も容易になります。
+#### 使用例（Distributed Actor）
+
+```swift
+import Distributed
+import EventStoreAdapter
+import EventStoreAdapterSupport
+import Foundation
+
+@AggregateActor
+public distributed actor DistributedAccount {
+    // 分散アクターでは actorSystem プロパティが必須
+    // (自動生成イニシャライザで使用される)
+    var aid: AID
+    var seqNr: Int
+    var version: Int
+    var lastUpdatedAt: Date
+
+    public init(
+        actorSystem: ActorSystem,
+        aid: AID,
+        seqNr: Int,
+        version: Int,
+        lastUpdatedAt: Date
+    ) {
+        self.actorSystem = actorSystem
+        self.aid = aid
+        self.seqNr = seqNr
+        self.version = version
+        self.lastUpdatedAt = lastUpdatedAt
+    }
+
+    public struct AID: AggregateId {
+        public static let name = "distributed_account"
+        public var value: UUID
+        // ...
+    }
+
+    // @AggregateActor により以下が自動生成される:
+    //
+    // public struct Snapshot: EventStoreAdapter.Aggregate { ... }
+    // public distributed var snapshot: Snapshot { ... }
+    // public init(actorSystem: ActorSystem, snapshot: Snapshot) { ... }
+}
+
+// ---- スナップショットの保存・復元例 ----
+// たとえばリモート呼び出しで:
+// let snapshot = try await someDistributedAccount.snapshot
+// let restored = DistributedAccount(actorSystem: system, snapshot: snapshot)
+```
 
 #### メリット
 
-- アクター内の状態を一括して **スナップショット構造体** にまとめるための宣言を手書きする必要がありません。
-- **プロパティの追加/削除** による変更にも容易に追従し、  
-  スナップショットとの不整合を**マクロが防止**してくれます。
+- **スナップショット用構造体の手動定義が不要**  
+  アクターのストアドプロパティから自動的に `Snapshot` を生成するので、**重複コード**を大幅に削減できます。
+
+- **ローカルと分散アクターの両方に対応**  
+  通常の `actor` では `init(snapshot:)` を生成し、  
+  `distributed actor` では `init(actorSystem:..., snapshot:)` や `distributed var snapshot` が生成されるので、  
+  分散アクターの状態も簡単に保存・復元できます。
+
+- **`EventStoreAdapter.Aggregate` 準拠のスナップショット**  
+  スナップショットが `aid`, `seqNr`, `version` などを一括管理しやすくなり、  
+  既存の CQRS + Event Sourcing アプローチと組み合わせて使いやすい構造になります。
 
 #### 注意点
 
-- `actor` に対するマクロであるため、`class` や `struct` などには適用できません。
-- カスタムアクセサ (`get`/`set`/`willSet`/`didSet`) を持つプロパティはスナップショット対象外となります。
-- private スコープのプロパティも含め、ストアドプロパティはすべてスナップショットに含まれる可能性があるため注意してください。
+- `actor` / `distributed actor` 以外の宣言（`struct`, `class` 等）には付与できません。
+- アクターのストアドプロパティで、`get` / `set` / `willSet` / `didSet` といった**カスタムアクセサがある場合**は対象外となり、スナップショットへの自動生成は行われません。
+- `distributed actor` を使う際は、Swift の言語仕様上 **`actorSystem`** というプロパティが必要です。  
+  マクロが生成するイニシャライザでも `actorSystem` を使用します。
+- プロパティのアクセスレベルによらず、マクロは**ソースコード上にあるストアドプロパティをすべて**解析します。
 
 ---
 
@@ -307,8 +359,7 @@ Swift 6.0 時点では、マクロ生成コードを直接閲覧するための�
 ## 関連リンク
 
 - **Event Store Adapter (本家ライブラリ)**  
-  [lemo-nade-room/event-store-adapter-swift](https://github.com/lemo-nade-room/event-store-adapter-swift)  
-  DynamoDB ベースの実装や、インメモリ実装など、CQRS + Event Sourcing を Swift で使うための各種機能を提供。
+  [lemo-nade-room/event-store-adapter-swift](https://github.com/lemo-nade-room/event-store-adapter-swift)
 
 - **Issue や PR**  
   ご意見・ご要望・バグ報告などがあれば、Issue もしくはプルリクエストでお知らせください。
