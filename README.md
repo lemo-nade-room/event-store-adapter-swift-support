@@ -5,30 +5,31 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/lemo-nade-room/event-store-adapter-swift-support/actions/workflows/ci.yaml/badge.svg)](https://github.com/lemo-nade-room/event-store-adapter-swift-support/actions)
 
-`EventStoreAdapterSupport` は、  
-[lemo-nade-room/event-store-adapter-swift](https://github.com/lemo-nade-room/event-store-adapter-swift)  
-と組み合わせて利用できる **Swift Macros** ベースの拡張ライブラリです。  
-イベントソーシング・CQRS を用いた開発において、「煩雑なボイラープレートコード」を最小化するための仕組みを提供します。
+[English] [日本語](./README.ja.md)
 
-## 概要
+`EventStoreAdapterSupport` is a **Swift Macros**-based utility library designed to work seamlessly with [lemo-nade-room/event-store-adapter-swift](https://github.com/lemo-nade-room/event-store-adapter-swift). It provides mechanisms to minimize boilerplate code in Event Sourcing and CQRS development.
 
-このライブラリが提供する主な機能は次のとおりです。
+## Overview
 
-**`@EventSupport` (Macro)**
-- `EventStoreAdapter.Event` に準拠した `enum` に付与すると、
-  イベントが **共通して持つべきプロパティ**（`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`）を自動的に生成します。
-- 列挙子ごとに共通の値を取り出すための冗長な `switch` 文を省略できます。
+This library provides the following key features:
 
-本リポジトリには、このマクロの動作確認用テストが含まれています。
-加えて、今後 `event-store-adapter-swift` ライブラリの使用をより便利にするための **追加ヘルパー** も実装予定です。
+**`@EventSupport` Macro**
+- When applied to an `enum` conforming to `EventStoreAdapter.Event`, it automatically generates common event properties (`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`).
+- Eliminates the need for repetitive `switch` statements to extract common values from enum cases.
+
+**`UUID+LosslessStringConvertible` Extension**
+- Provides convenient string conversion capabilities for `Foundation.UUID` using Swift 6.0's `@retroactive` keyword.
+- Essential for Event Sourcing scenarios where UUIDs are frequently used as event IDs and aggregate IDs.
+
+This repository includes comprehensive tests for macro functionality and is designed to make working with the `event-store-adapter-swift` library more convenient.
 
 ---
 
-## インストール方法
+## Installation
 
 ### Swift Package Manager (SPM)
 
-1. **Package.swift** で依存関係を追加する
+1. **Add dependency in Package.swift**
 
     ```swift
     dependencies: [
@@ -40,37 +41,36 @@
     ]
     ```
 
-2. **ターゲット**に `EventStoreAdapterSupport` を組み込む
+2. **Add to your target**
 
     ```swift
     .target(
         name: "YourTarget",
         dependencies: [
             .product(name: "EventStoreAdapterSupport", package: "event-store-adapter-swift-support"),
-            // ほか依存パッケージ...
+            // other dependencies...
         ]
     )
     ```
 
-3. `swift build` または Xcode 上でビルド・実行
+3. Build with `swift build` or in Xcode
 
 ---
 
-## 使い方とサンプル
+## Usage and Examples
 
-### 1. `@EventSupport` マクロ
+### 1. `@EventSupport` Macro
 
-`@EventSupport` は、`enum` 宣言に対し共通イベントプロパティを**自動生成**するマクロです。  
-特に **`EventStoreAdapter.Event`** に準拠した列挙型に適用することを想定しています。
+The `@EventSupport` macro automatically generates common event properties for `enum` declarations. It's specifically designed for enums conforming to `EventStoreAdapter.Event`.
 
-#### 典型例
+#### Basic Example
 
 ```swift
 import EventStoreAdapter
 import EventStoreAdapterSupport
 import Foundation
 
-// まずイベントのペイロード型を定義 (ここでは例として2種類)
+// Define event payload types
 struct AccountCreated: EventStoreAdapter.Event {
     let id: UUID
     let aid: AccountID
@@ -88,7 +88,7 @@ struct AccountDeleted: EventStoreAdapter.Event {
     let isCreated: Bool = false
 }
 
-// 集約ID (AggregateId)
+// Aggregate ID
 struct AccountID: AggregateId {
     static let name = "account"
     let value: UUID
@@ -102,20 +102,20 @@ struct AccountID: AggregateId {
     var description: String { value.uuidString }
 }
 
-// @EventSupport を適用（EventStoreAdapter.Event継承あり）
+// Apply @EventSupport to enum conforming to EventStoreAdapter.Event
 @EventSupport
 enum AccountEvent: EventStoreAdapter.Event {
     case created(AccountCreated)
     case deleted(AccountDeleted)
 
-    // プロトコル要件 (ID 型/ AID 型)
+    // Protocol requirements
     typealias Id = UUID
     typealias AID = AccountID
 }
 
-// プロトコル継承なしでも使用可能
+// Works without protocol conformance too
 @EventSupport
-enum SomeEvent {  // プロトコル継承は任意
+enum SomeEvent {  // Protocol conformance is optional
     case happened(SomeData)
     case occurred(OtherData)
     
@@ -123,9 +123,9 @@ enum SomeEvent {  // プロトコル継承は任意
     typealias AID = UUID
 }
 
-// 非修飾名でも使用可能
+// Works with unqualified Event protocol name
 @EventSupport
-enum TodoEvent: Event {  // EventStoreAdapter.Event の代わりに Event でも OK
+enum TodoEvent: Event {  // Event instead of EventStoreAdapter.Event
     case created(TodoCreated)
     case updated(TodoUpdated)
     
@@ -134,7 +134,7 @@ enum TodoEvent: Event {  // EventStoreAdapter.Event の代わりに Event でも
 }
 ```
 
-この `@EventSupport` マクロを適用すると、**列挙型が自動的に下記のプロパティ**を持つようになります。
+When `@EventSupport` is applied, the enum automatically gains the following properties:
 
 - `var id: Self.Id`
 - `var aid: Self.AID`
@@ -142,8 +142,7 @@ enum TodoEvent: Event {  // EventStoreAdapter.Event の代わりに Event でも
 - `var occurredAt: Date`
 - `var isCreated: Bool`
 
-列挙子を切り替える `switch self` が生成されるので、同様のコードを手書きする必要はありません。  
-具体的には、以下のようなコードが（内部的に）追加されます:
+The macro generates `switch self` statements internally, eliminating the need to write repetitive code. Specifically, code like this is added:
 
 ```swift
 extension AccountEvent {
@@ -194,52 +193,90 @@ extension AccountEvent {
 }
 ```
 
-#### メリット
+#### Benefits
 
-- **イベントごとに重複するコードを大幅に削減**
-- **将来的にイベントケースが増えても、同じ型構造なら自動スイッチが拡張**
-- **enum の可読性・保守性の向上**
+- **Dramatically reduces repetitive code** across event types
+- **Automatically extends switch statements** when new event cases are added with the same structure
+- **Improves enum readability and maintainability**
 
-#### 注意点
+#### Important Notes
 
-- `@EventSupport` は任意の `enum` に適用できます。プロトコル継承は必須ではありません。
-- 生成されるプロパティ（`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`）を使用する場合は、列挙子のペイロード型がこれらのプロパティを持つ必要があります。
-- タプル形式 (`case created(id: UUID, seqNr: Int)`) などのケースは非対応です。必ず **構造体・クラスなどの型**を割り当ててください。
-- `EventStoreAdapter.Event` と組み合わせて使用する場合は、適切な `typealias Id` と `typealias AID` の設定を行ってください。
+- `@EventSupport` can be applied to any `enum`. Protocol conformance is not required.
+- When using the generated properties (`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`), the payload types of enum cases must have these properties.
+- Tuple-style cases (`case created(id: UUID, seqNr: Int)`) are not supported. Always use **struct or class types** as payloads.
+- When used with `EventStoreAdapter.Event`, ensure proper `typealias Id` and `typealias AID` definitions.
 
+### 2. `UUID+LosslessStringConvertible` Extension
+
+This extension makes `Foundation.UUID` conform to `LosslessStringConvertible` using Swift 6.0's `@retroactive` keyword, providing more intuitive string conversion APIs.
+
+```swift
+import EventStoreAdapterSupport
+import Foundation
+
+// Create UUID from string
+let uuid = UUID("550E8400-E29B-41D4-A716-446655440000")
+
+// Convert UUID to string
+let uuidString = String(uuid)
+
+// Round-trip conversion
+let originalUUID = UUID()
+let stringRepresentation = String(originalUUID)
+let restoredUUID = UUID(stringRepresentation)
+```
+
+This is particularly useful in Event Sourcing scenarios where UUIDs are frequently used as event IDs and aggregate IDs, and string conversion is often required.
 
 ---
 
 ## FAQ
 
-### Q. `EventStoreAdapter.Event` に準拠しない `enum` に `@EventSupport` を付けたらどうなる？
+### Q. What happens if I apply `@EventSupport` to an enum that doesn't conform to `EventStoreAdapter.Event`?
 
-A. 問題ありません。`@EventSupport` はプロトコル継承を要求しないため、任意の `enum` に適用できます。ただし、生成されるプロパティを使用する場合は、列挙子のペイロード型が対応するプロパティを持つ必要があります。
+A. No problem! `@EventSupport` doesn't require protocol conformance and can be applied to any `enum`. However, if you use the generated properties, the payload types of enum cases must have the corresponding properties.
 
+### Q. Are tuple-style cases like `case created(id: UUID)` supported by `@EventSupport`?
 
-### Q. タプル形式の `case created(id: UUID)` のようなものは `@EventSupport` でサポートされる？
+A. Currently **not supported**. You must use **struct types** that satisfy `EventStoreAdapter.Event` requirements as case payloads.
 
-A. 現状は**サポートしていません**。必ず **構造体**など、`EventStoreAdapter.Event` を満たす型を `case` のペイロードに指定してください。
+### Q. Where can I see the code generated by the macro?
 
-### Q. マクロが生成するコードはどこで確認できる？
-
-A. Xcode の `DerivedData` フォルダ内のビルド成果物や、`swift build` 実行後の出力で確認できます。  
-Swift 6.0 時点では、マクロ生成コードを直接閲覧するための簡易なコマンドが用意されていません。  
-ただし、エラー発生時などにコンソールへ部分的に表示される場合があります。
+A. You can find it in Xcode's `DerivedData` folder build artifacts or in the output after running `swift build`. As of Swift 6.0, there's no simple command to directly view macro-generated code, though it may be partially displayed in the console during error conditions.
 
 ---
 
-## ライセンス
+## Requirements
 
-このライブラリは [MIT License](./LICENSE) のもとで配布されています。  
-詳細は `LICENSE` ファイルを参照してください。
+- **Swift 6.0+**
+- **macOS 15.0+** (or other supported platforms)
+- **Xcode 16.0+** (for development)
 
 ---
 
-## 関連リンク
+## License
 
-- **Event Store Adapter (本家ライブラリ)**  
+This library is distributed under the [MIT License](./LICENSE).  
+See the `LICENSE` file for details.
+
+---
+
+## Related Links
+
+- **Event Store Adapter (Main Library)**  
   [lemo-nade-room/event-store-adapter-swift](https://github.com/lemo-nade-room/event-store-adapter-swift)
 
-- **Issue や PR**  
-  ご意見・ご要望・バグ報告などがあれば、Issue もしくはプルリクエストでお知らせください。
+- **Issues and Pull Requests**  
+  For feedback, feature requests, or bug reports, please create an Issue or Pull Request.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
