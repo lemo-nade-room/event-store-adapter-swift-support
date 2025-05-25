@@ -19,7 +19,6 @@ let package = Package(
         .package(url: "https://github.com/swiftlang/swift-syntax", from: "600.0.0"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-distributed-actors.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -27,16 +26,15 @@ let package = Package(
         .target(
             name: "EventStoreAdapterSupport",
             dependencies: [
-                .product(name: "EventStoreAdapter", package: "event-store-adapter-swift"),
-                "EventStoreAdapterSupportMacro",
+                "EventStoreAdapterSupportMacro"
             ],
             swiftSettings: swiftSettings
         ),
         .testTarget(
             name: "EventStoreAdapterSupportTests",
             dependencies: [
+                .product(name: "EventStoreAdapter", package: "event-store-adapter-swift"),
                 "EventStoreAdapterSupport",
-                .product(name: "DistributedCluster", package: "swift-distributed-actors"),
             ],
             swiftSettings: swiftSettings
         ),
@@ -54,7 +52,6 @@ let package = Package(
                 "EventStoreAdapterSupportMacro",
                 .product(name: "SwiftSyntaxMacroExpansion", package: "swift-syntax"),
                 .product(name: "MacroTesting", package: "swift-macro-testing"),
-                .product(name: "DistributedCluster", package: "swift-distributed-actors"),
             ],
             swiftSettings: swiftSettings
         ),
