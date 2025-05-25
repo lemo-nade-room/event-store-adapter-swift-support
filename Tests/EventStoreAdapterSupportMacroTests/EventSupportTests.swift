@@ -193,31 +193,153 @@ struct EventSupportTests {
         }
     }
 
-    @Test func Eventに準拠していなければエラーメッセージを出す() async throws {
+    @Test func プロトコル継承なしでも動作する() async throws {
         assertMacro {
             """
             @EventSupport
-            package enum Event {
-                case created(AccountCreated)
-                case updated(AccountUpdated)
-                case deleted(AccountDeleted)    
+            package enum SomeEvent {
+                case happened(SomeData)
+                case occurred(OtherData)
 
                 typealias Id = UUID
-                typealias AggregateId = UUID
+                typealias AID = UUID
             }
             """
-        } diagnostics: {
+        } expansion: {
             """
-            @EventSupport
-            ┬────────────
-            ╰─ 🛑 The annotated type must conform to EventStoreAdapter.Event.
-            package enum Event {
-                case created(AccountCreated)
-                case updated(AccountUpdated)
-                case deleted(AccountDeleted)    
+            package enum SomeEvent {
+                case happened(SomeData)
+                case occurred(OtherData)
 
                 typealias Id = UUID
-                typealias AggregateId = UUID
+                typealias AID = UUID
+
+                package var id: Self.Id {
+                    switch self {
+                    case .happened(let event):
+                        event.id
+                    case .occurred(let event):
+                        event.id
+                    }
+                }
+
+                package var aid: Self.AID {
+                    switch self {
+                    case .happened(let event):
+                        event.aid
+                    case .occurred(let event):
+                        event.aid
+                    }
+                }
+
+                package var seqNr: Int {
+                    switch self {
+                    case .happened(let event):
+                        event.seqNr
+                    case .occurred(let event):
+                        event.seqNr
+                    }
+                }
+
+                package var occurredAt: Date {
+                    switch self {
+                    case .happened(let event):
+                        event.occurredAt
+                    case .occurred(let event):
+                        event.occurredAt
+                    }
+                }
+
+                package var isCreated: Bool {
+                    switch self {
+                    case .happened(let event):
+                        event.isCreated
+                    case .occurred(let event):
+                        event.isCreated
+                    }
+                }
+            }
+            """
+        }
+    }
+
+    @Test func 非修飾名のEventプロトコルでも動作する() async throws {
+        assertMacro {
+            """
+            @EventSupport
+            package enum TodoEvent: Event {
+                case created(Created)
+                case updated(Updated)
+                case deleted(Deleted)
+
+                typealias Id = UUID
+                typealias AID = UUID
+            }
+            """
+        } expansion: {
+            """
+            package enum TodoEvent: Event {
+                case created(Created)
+                case updated(Updated)
+                case deleted(Deleted)
+
+                typealias Id = UUID
+                typealias AID = UUID
+
+                package var id: Self.Id {
+                    switch self {
+                    case .created(let event):
+                        event.id
+                    case .updated(let event):
+                        event.id
+                    case .deleted(let event):
+                        event.id
+                    }
+                }
+
+                package var aid: Self.AID {
+                    switch self {
+                    case .created(let event):
+                        event.aid
+                    case .updated(let event):
+                        event.aid
+                    case .deleted(let event):
+                        event.aid
+                    }
+                }
+
+                package var seqNr: Int {
+                    switch self {
+                    case .created(let event):
+                        event.seqNr
+                    case .updated(let event):
+                        event.seqNr
+                    case .deleted(let event):
+                        event.seqNr
+                    }
+                }
+
+                package var occurredAt: Date {
+                    switch self {
+                    case .created(let event):
+                        event.occurredAt
+                    case .updated(let event):
+                        event.occurredAt
+                    case .deleted(let event):
+                        event.occurredAt
+                    }
+                }
+
+                package var isCreated: Bool {
+                    switch self {
+                    case .created(let event):
+                        event.isCreated
+                    case .updated(let event):
+                        event.isCreated
+                    case .deleted(let event):
+                        event.isCreated
+                    }
+                }
             }
             """
         }
