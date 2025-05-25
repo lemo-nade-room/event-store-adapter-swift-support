@@ -26,7 +26,7 @@ struct UUIDLosslessStringConvertibleTests {
         let uuid = UUID(uuidString)
         #expect(uuid != nil)
 
-        if let uuid = uuid {
+        if let uuid {
             let restored = String(uuid)
             #expect(restored.uppercased() == uuidString.uppercased())
         }
