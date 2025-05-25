@@ -65,12 +65,3 @@ import Testing
     #expect(event.occurredAt == ISO8601DateFormatter().date(from: "2022-01-01T00:00:00Z")!)
     #expect(event.isCreated == true)
 }
-
-extension UUID: @retroactive LosslessStringConvertible {
-    init?(_ description: String) {
-        self.init(uuidString: description)
-    }
-    var description: String {
-        uuidString
-    }
-}
