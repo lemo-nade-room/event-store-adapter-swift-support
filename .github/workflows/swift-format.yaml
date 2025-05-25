@@ -15,4 +15,5 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - run: brew install swift-format
       - run: swift format lint -s --configuration .swift-format -r Sources Tests Package.swift
