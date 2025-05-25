@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "swift"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "lemo-nade-room"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
