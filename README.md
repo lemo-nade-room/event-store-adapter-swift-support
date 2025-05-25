@@ -108,7 +108,7 @@ struct AccountID: AggregateId {
     var description: String { value.uuidString }
 }
 
-// @EventSupport を適用
+// @EventSupport を適用（EventStoreAdapter.Event継承あり）
 @EventSupport
 enum AccountEvent: EventStoreAdapter.Event {
     case created(AccountCreated)
@@ -117,6 +117,26 @@ enum AccountEvent: EventStoreAdapter.Event {
     // プロトコル要件 (ID 型/ AID 型)
     typealias Id = UUID
     typealias AID = AccountID
+}
+
+// プロトコル継承なしでも使用可能
+@EventSupport
+enum SomeEvent {  // プロトコル継承は任意
+    case happened(SomeData)
+    case occurred(OtherData)
+    
+    typealias Id = UUID
+    typealias AID = UUID
+}
+
+// 非修飾名でも使用可能
+@EventSupport
+enum TodoEvent: Event {  // EventStoreAdapter.Event の代わりに Event でも OK
+    case created(TodoCreated)
+    case updated(TodoUpdated)
+    
+    typealias Id = UUID
+    typealias AID = TodoID
 }
 ```
 
@@ -188,10 +208,10 @@ extension AccountEvent {
 
 #### 注意点
 
-- `enum` は **`EventStoreAdapter.Event`** に準拠している必要があります。  
-  (`typealias Id` と `typealias AID` の設定を忘れずに行う)
-- 列挙子のペイロード型も、`EventStoreAdapter.Event` プロトコルの必須プロパティを正しく実装していないといけません。
+- `@EventSupport` は任意の `enum` に適用できます。プロトコル継承は必須ではありません。
+- 生成されるプロパティ（`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`）を使用する場合は、列挙子のペイロード型がこれらのプロパティを持つ必要があります。
 - タプル形式 (`case created(id: UUID, seqNr: Int)`) などのケースは非対応です。必ず **構造体・クラスなどの型**を割り当ててください。
+- `EventStoreAdapter.Event` と組み合わせて使用する場合は、適切な `typealias Id` と `typealias AID` の設定を行ってください。
 
 ---
 
@@ -330,7 +350,7 @@ public distributed actor DistributedAccount {
 
 ### Q. `EventStoreAdapter.Event` に準拠しない `enum` に `@EventSupport` を付けたらどうなる？
 
-A. コンパイル時にエラーが発生します。マクロが適用できない旨のエラーメッセージが表示されます。
+A. 問題ありません。`@EventSupport` はプロトコル継承を要求しないため、任意の `enum` に適用できます。ただし、生成されるプロパティを使用する場合は、列挙子のペイロード型が対応するプロパティを持つ必要があります。
 
 ### Q. `@AggregateActor` で生成される `Snapshot` にはアクセスレベルを付けられる？
 
