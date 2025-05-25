@@ -1,13 +1,13 @@
 {
-  "originHash" : "976dca197bdd0232abbcd2cab4c4fca2fcdbb3745b6c16bbc405c454121a9bb0",
+  "originHash" : "b3f90d1961447124b128dd29bfa643cd97642bb1a7d688f2d858ba3dc401de94",
   "pins" : [
     {
       "identity" : "aws-crt-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/awslabs/aws-crt-swift",
       "state" : {
-        "revision" : "8b77a9ba5bf2ce328b3b6c551f211fa644d4b0f3",
-        "version" : "0.47.0"
+        "revision" : "5be6550f81c760cceb0a43c30d4149ac55c5640c",
+        "version" : "0.52.1"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/awslabs/aws-sdk-swift",
       "state" : {
-        "revision" : "1f049fdc5e845b75be11a1ae7c2040fd305bbce9",
-        "version" : "1.2.43"
+        "revision" : "f8ec9a0610f4918838c807096c53701dce9300b1",
+        "version" : "1.3.23"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lemo-nade-room/event-store-adapter-swift.git",
       "state" : {
-        "revision" : "cb6b5adbd575046e54c8f101ee6c9efb4af1b7c0",
-        "version" : "1.0.0"
+        "revision" : "9334c8292c060e49d2e03227563d30f3b4a4f7fb",
+        "version" : "1.1.1"
       }
     },
     {
@@ -33,8 +33,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/smithy-lang/smithy-swift",
       "state" : {
-        "revision" : "d2b74b108a82b606b68c5e79e62fde486da50437",
-        "version" : "0.124.0"
+        "revision" : "aa4cb4585232b52f116286e432dca055df698863",
+        "version" : "0.131.0"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
       }
     },
     {
@@ -42,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
-        "revision" : "ae33e5941bb88d88538d0a6b19ca0b01e6c76dcf",
-        "version" : "1.3.1"
+        "revision" : "a54383ada6cecde007d374f58f864e29370ba5c3",
+        "version" : "1.3.2"
       }
     },
     {
@@ -51,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "a6ce32a18b81b04ce7e897d1d98df6eb2da04786",
-        "version" : "3.12.2"
+        "revision" : "e8d6eba1fef23ae5b359c46b03f7d94be2f41fed",
+        "version" : "3.12.3"
       }
     },
     {
@@ -96,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-macro-testing.git",
       "state" : {
-        "revision" : "0b80a098d4805a21c412b65f01ffde7b01aab2fa",
-        "version" : "0.6.0"
+        "revision" : "cfe474c7e97d429ea31eefed2e9ab8c7c74260f9",
+        "version" : "0.6.2"
       }
     },
     {
@@ -105,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
-        "revision" : "b2d4cb30735f4fbc3a01963a9c658336dd21e9ba",
-        "version" : "1.18.1"
+        "revision" : "37230a37e83f1b7023be08e1b1a2603fcb1567fb",
+        "version" : "1.18.4"
       }
     },
     {
