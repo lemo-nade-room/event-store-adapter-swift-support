@@ -1,5 +1,24 @@
 /// # `EventSupport` Macro
 ///
+/// The `@EventSupport` macro automatically generates common event properties for Swift `enum` declarations
+/// used in **CQRS + Event Sourcing** architectures.
+///
+/// When applied to an `enum` conforming to `EventStoreAdapter.Event` with multiple cases,
+/// this macro generates switch-based computed properties that extract common event data
+/// from each case's associated value.
+///
+/// ## Generated Properties
+///
+/// - `id`: Unique event identifier
+/// - `aid`: Aggregate ID
+/// - `seqNr`: Event sequence number (sequential per aggregate)
+/// - `occurredAt`: Event occurrence timestamp
+/// - `isCreated`: Flag indicating if this is a creation event
+///
+/// ---
+///
+/// # `EventSupport` マクロ
+///
 /// `@EventSupport` は、Swift の `enum` 宣言に対して **CQRS + Event Sourcing** で必要となるイベントの共通プロパティを自動生成します。
 /// `EventStoreAdapter.Event` プロトコルに準拠した `enum`  が複数のケースを持つ場合、それぞれのケースが共通して持つべき以下のプロパティをスイッチで切り替えて返すコードをマクロが生成します。
 ///
@@ -8,6 +27,19 @@
 /// - `seqNr`: イベントのシーケンス番号 (集約ごとに連番)
 /// - `occurredAt`: イベントが起こった日時
 /// - `isCreated`: 生成イベントかどうかを示すフラグ
+///
+/// ## Overview
+///
+/// - Designed for `enum` types conforming to `EventStoreAdapter.Event`, consolidating properties
+///   from payload types (`struct`, etc.) contained in each case (`case created(...)`, `case updated(...)`, etc.)
+/// - By applying `@EventSupport`, **common properties required by all cases** are automatically generated
+///   with `switch self` statements that return appropriate values based on the current case
+/// - Specifically, the following properties are generated:
+///   1. `var id: Self.Id`
+///   2. `var aid: Self.AID`
+///   3. `var seqNr: Int`
+///   4. `var occurredAt: Date`
+///   5. `var isCreated: Bool`
 ///
 /// ## 概要
 ///
@@ -19,6 +51,21 @@
 ///   3. `var seqNr: Int`
 ///   4. `var occurredAt: Date`
 ///   5. `var isCreated: Bool`
+///
+/// ## Applicable Targets
+///
+/// - Can only be applied to **`enum`** types conforming to **`EventStoreAdapter.Event`**
+/// - Applying to `struct`, `class`, or other types will result in compilation errors
+/// - Even for `enum` types, if they don't conform to `EventStoreAdapter.Event`, macro application will fail
+///
+/// ```swift
+/// @EventSupport
+/// public enum AccountEvent: EventStoreAdapter.Event {
+///     case created(AccountCreated)
+///     case updated(AccountUpdated)
+///     // ...
+/// }
+/// ```
 ///
 /// ## 付与対象
 ///
@@ -34,6 +81,29 @@
 ///     // ...
 /// }
 /// ```
+///
+/// ## Auto-Generated Content
+///
+/// ### Property List
+///
+/// 1. `id: Self.Id`
+///    - Returns the `id` property of the event type held by each case
+///
+/// 2. `aid: Self.AID`
+///    - Retrieves the aggregate ID
+///    - Examples: `AccountCreated.aid`, `AccountUpdated.aid`, etc.
+///
+/// 3. `seqNr: Int`
+///    - Unique sequence number per aggregate
+///    - Switches between `AccountCreated.seqNr`, `AccountUpdated.seqNr`, etc.
+///
+/// 4. `occurredAt: Date`
+///    - Event occurrence timestamp
+///    - Examples: `AccountCreated.occurredAt`, `AccountUpdated.occurredAt`, etc.
+///
+/// 5. `isCreated: Bool`
+///    - Whether this event is a "creation event (initial aggregate creation)"
+///    - Example: `AccountCreated.isCreated` is `true`, `AccountUpdated.isCreated` is `false`, etc.
 ///
 /// ## 自動生成されるもの
 ///
@@ -57,6 +127,24 @@
 /// 5. `isCreated: Bool`
 ///    - このイベントが「作成イベント（集約の初回作成）」かどうか。
 ///    - 例: `AccountCreated.isCreated` が `true` で、`AccountUpdated.isCreated` が `false`、など。
+///
+/// ### Generated Code Examples
+///
+/// #### Example: Event Definition
+///
+/// ```swift
+/// @EventSupport
+/// enum AccountEvent: EventStoreAdapter.Event {
+///     case created(AccountCreated)
+///     case updated(AccountUpdated)
+///
+///     // Required definitions:
+///     // - typealias Id = UUID
+///     // - typealias AID = Account.Id
+/// }
+/// ```
+///
+/// #### Example: Auto-Generated Code (Overview)
 ///
 /// ### 生成されるコード例
 ///
