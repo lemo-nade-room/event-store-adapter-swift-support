@@ -1,5 +1,5 @@
 {
-  "originHash" : "42c642125baaa3dca1272d5e588a33b9434fdd783e6f3cfa41fa4ec0b03c13f3",
+  "originHash" : "6022302d42d66c511590689fc088f6db5025d616d93045c306a21e4efedd1a1d",
   "pins" : [
     {
       "identity" : "aws-crt-swift",
@@ -177,8 +177,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-macro-testing.git",
       "state" : {
-        "revision" : "0b80a098d4805a21c412b65f01ffde7b01aab2fa",
-        "version" : "0.6.0"
+        "revision" : "cfe474c7e97d429ea31eefed2e9ab8c7c74260f9",
+        "version" : "0.6.2"
       }
     },
     {
