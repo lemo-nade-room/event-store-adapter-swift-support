@@ -1,5 +1,5 @@
 {
-  "originHash" : "42c642125baaa3dca1272d5e588a33b9434fdd783e6f3cfa41fa4ec0b03c13f3",
+  "originHash" : "6022302d42d66c511590689fc088f6db5025d616d93045c306a21e4efedd1a1d",
   "pins" : [
     {
       "identity" : "aws-crt-swift",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lemo-nade-room/event-store-adapter-swift.git",
       "state" : {
-        "revision" : "cb6b5adbd575046e54c8f101ee6c9efb4af1b7c0",
-        "version" : "1.0.0"
+        "revision" : "9334c8292c060e49d2e03227563d30f3b4a4f7fb",
+        "version" : "1.1.1"
       }
     },
     {
