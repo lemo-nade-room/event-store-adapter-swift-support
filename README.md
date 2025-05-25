@@ -36,7 +36,7 @@ This repository includes comprehensive tests for macro functionality and is desi
         // ...
         .package(
             url: "https://github.com/lemo-nade-room/event-store-adapter-swift-support.git",
-            branch: "main"
+            from: "1.0.0"
         )
     ]
     ```
