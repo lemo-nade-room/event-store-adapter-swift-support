@@ -14,18 +14,12 @@
 
 このライブラリが提供する主な機能は次のとおりです。
 
-1. **`@AggregateActor` (Macro)**  
-   - Swift の `actor` や `distributed actor` に付与すると、  
-     そのアクターの状態を表す **スナップショット用構造体** と **スナップショット取得/復元用のプロパティ・イニシャライザ** を自動的に生成します。  
-   - スナップショット型は `EventStoreAdapter.Aggregate` に準拠するため、**エンティティの保存や復元**を簡素化します。  
-   - `distributed actor` に適用した場合は、`distributed var snapshot` や `init(actorSystem:..., snapshot:)` が自動的に追加され、分散アクターでも容易にスナップショットが扱えるようになります。
+**`@EventSupport` (Macro)**
+- `EventStoreAdapter.Event` に準拠した `enum` に付与すると、
+  イベントが **共通して持つべきプロパティ**（`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`）を自動的に生成します。
+- 列挙子ごとに共通の値を取り出すための冗長な `switch` 文を省略できます。
 
-2. **`@EventSupport` (Macro)**  
-   - `EventStoreAdapter.Event` に準拠した `enum` に付与すると、  
-     イベントが **共通して持つべきプロパティ**（`id`, `aid`, `seqNr`, `occurredAt`, `isCreated`）を自動的に生成します。  
-   - 列挙子ごとに共通の値を取り出すための冗長な `switch` 文を省略できます。
-
-本リポジトリには、これら 2 つのマクロの動作確認用テストが含まれています。  
+本リポジトリには、このマクロの動作確認用テストが含まれています。
 加えて、今後 `event-store-adapter-swift` ライブラリの使用をより便利にするための **追加ヘルパー** も実装予定です。
 
 ---
@@ -213,136 +207,6 @@ extension AccountEvent {
 - タプル形式 (`case created(id: UUID, seqNr: Int)`) などのケースは非対応です。必ず **構造体・クラスなどの型**を割り当ててください。
 - `EventStoreAdapter.Event` と組み合わせて使用する場合は、適切な `typealias Id` と `typealias AID` の設定を行ってください。
 
----
-
-### 2. `@AggregateActor` マクロ
-
-`@AggregateActor` は、**Swift の `actor` または `distributed actor`** に付与し、スナップショット型 (`Snapshot`) や
-初期化メソッドを自動生成するマクロです。  
-Event Sourcing では **スナップショット**を使ってアクター (集約) の最新状態を保存・復元することがありますが、  
-このマクロを用いると煩雑なスナップショット用コードを自動的に生成できます。
-
-#### 使用例（ローカル Actor）
-
-```swift
-import EventStoreAdapter
-import EventStoreAdapterSupport
-import Foundation
-
-@AggregateActor
-public actor Account {
-    var aid: AID
-    var seqNr: Int
-    var version: Int
-    var lastUpdatedAt: Date
-
-    public init(aid: AID, seqNr: Int, version: Int, lastUpdatedAt: Date) {
-        self.aid = aid
-        self.seqNr = seqNr
-        self.version = version
-        self.lastUpdatedAt = lastUpdatedAt
-    }
-
-    public struct AID: AggregateId {
-        public static let name = "account"
-        public var value: UUID
-        // ...
-    }
-
-    // @AggregateActor により以下が自動生成される:
-    //
-    // public struct Snapshot: EventStoreAdapter.Aggregate { ... }
-    // public var snapshot: Snapshot { ... }
-    // public init(snapshot: Snapshot) { ... }
-}
-
-// ---- スナップショットの保存・復元例 ----
-
-let actor = Account(
-    aid: .init(value: UUID()), 
-    seqNr: 1, 
-    version: 1, 
-    lastUpdatedAt: Date()
-)
-// スナップショット取り出し
-let snapshot = actor.snapshot
-
-// 復元時は:
-let restored = Account(snapshot: snapshot)
-// これで actor の状態が snapshot と同じになる
-```
-
-#### 使用例（Distributed Actor）
-
-```swift
-import Distributed
-import EventStoreAdapter
-import EventStoreAdapterSupport
-import Foundation
-
-@AggregateActor
-public distributed actor DistributedAccount {
-    // 分散アクターでは actorSystem プロパティが必須
-    // (自動生成イニシャライザで使用される)
-    var aid: AID
-    var seqNr: Int
-    var version: Int
-    var lastUpdatedAt: Date
-
-    public init(
-        actorSystem: ActorSystem,
-        aid: AID,
-        seqNr: Int,
-        version: Int,
-        lastUpdatedAt: Date
-    ) {
-        self.actorSystem = actorSystem
-        self.aid = aid
-        self.seqNr = seqNr
-        self.version = version
-        self.lastUpdatedAt = lastUpdatedAt
-    }
-
-    public struct AID: AggregateId {
-        public static let name = "distributed_account"
-        public var value: UUID
-        // ...
-    }
-
-    // @AggregateActor により以下が自動生成される:
-    //
-    // public struct Snapshot: EventStoreAdapter.Aggregate { ... }
-    // public distributed var snapshot: Snapshot { ... }
-    // public init(actorSystem: ActorSystem, snapshot: Snapshot) { ... }
-}
-
-// ---- スナップショットの保存・復元例 ----
-// たとえばリモート呼び出しで:
-// let snapshot = try await someDistributedAccount.snapshot
-// let restored = DistributedAccount(actorSystem: system, snapshot: snapshot)
-```
-
-#### メリット
-
-- **スナップショット用構造体の手動定義が不要**  
-  アクターのストアドプロパティから自動的に `Snapshot` を生成するので、**重複コード**を大幅に削減できます。
-
-- **ローカルと分散アクターの両方に対応**  
-  通常の `actor` では `init(snapshot:)` を生成し、  
-  `distributed actor` では `init(actorSystem:..., snapshot:)` や `distributed var snapshot` が生成されるので、  
-  分散アクターの状態も簡単に保存・復元できます。
-
-- **`EventStoreAdapter.Aggregate` 準拠のスナップショット**  
-  スナップショットが `aid`, `seqNr`, `version` などを一括管理しやすくなり、  
-  既存の CQRS + Event Sourcing アプローチと組み合わせて使いやすい構造になります。
-
-#### 注意点
-
-- `actor` / `distributed actor` 以外の宣言（`struct`, `class` 等）には付与できません。
-- アクターのストアドプロパティで、`get` / `set` / `willSet` / `didSet` といった**カスタムアクセサがある場合**は対象外となり、スナップショットへの自動生成は行われません。
-- `distributed actor` を使う際は、Swift の言語仕様上 **`actorSystem`** というプロパティが必要です。  
-  マクロが生成するイニシャライザでも `actorSystem` を使用します。
-- プロパティのアクセスレベルによらず、マクロは**ソースコード上にあるストアドプロパティをすべて**解析します。
 
 ---
 
@@ -352,10 +216,6 @@ public distributed actor DistributedAccount {
 
 A. 問題ありません。`@EventSupport` はプロトコル継承を要求しないため、任意の `enum` に適用できます。ただし、生成されるプロパティを使用する場合は、列挙子のペイロード型が対応するプロパティを持つ必要があります。
 
-### Q. `@AggregateActor` で生成される `Snapshot` にはアクセスレベルを付けられる？
-
-A. アクターに付与されている修飾子 (`public`, `internal` など) に準じて生成されます。  
-例えば、`public actor SomeActor` に適用すると、`public struct Snapshot` が生成されます。
 
 ### Q. タプル形式の `case created(id: UUID)` のようなものは `@EventSupport` でサポートされる？
 
