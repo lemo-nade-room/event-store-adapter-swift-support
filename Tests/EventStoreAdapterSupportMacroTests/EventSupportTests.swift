@@ -4,12 +4,7 @@ import SwiftSyntax
 import SwiftSyntaxMacroExpansion
 import Testing
 
-@Suite(
-    .macros(
-        record: .missing,
-        macros: ["EventSupport": EventSupport.self]
-    )
-)
+@Suite(.macros([EventSupport.self]))
 struct EventSupportTests {
     @Test func 正常系() async throws {
         assertMacro {
