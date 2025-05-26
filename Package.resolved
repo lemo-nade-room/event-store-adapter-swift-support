@@ -1,5 +1,5 @@
 {
-  "originHash" : "b3f90d1961447124b128dd29bfa643cd97642bb1a7d688f2d858ba3dc401de94",
+  "originHash" : "8ab3222a65be3bcc84b17e3a412419670322b972405e53bf50d204414bbce5bf",
   "pins" : [
     {
       "identity" : "aws-crt-swift",
@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax",
       "state" : {
-        "revision" : "0687f71944021d616d34d922343dcef086855920",
-        "version" : "600.0.1"
+        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
+        "version" : "601.0.1"
       }
     },
     {
