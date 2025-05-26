@@ -16,7 +16,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/lemo-nade-room/event-store-adapter-swift.git", from: "1.0.0"),
-        .package(url: "https://github.com/swiftlang/swift-syntax", from: "600.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax", from: "601.0.1"),
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.6.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.0.0"),
     ],
