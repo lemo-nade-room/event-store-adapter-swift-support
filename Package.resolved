@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lemo-nade-room/event-store-adapter-swift.git",
       "state" : {
-        "revision" : "9334c8292c060e49d2e03227563d30f3b4a4f7fb",
-        "version" : "1.1.1"
+        "revision" : "389d524d086406aef2487344e7f4180f0d097a96",
+        "version" : "1.1.2"
       }
     },
     {
