@@ -18,11 +18,11 @@ import SwiftSyntaxMacros
 /// with this plugin directly.
 @main
 struct EventStoreAdapterSupportMacro: CompilerPlugin {
-    /// The list of macro types provided by this plugin.
-    ///
-    /// This array contains all the macro implementations that are available
-    /// for use when the EventStoreAdapterSupport package is imported.
-    var providingMacros: [any Macro.Type] = [
-        EventSupport.self
-    ]
+  /// The list of macro types provided by this plugin.
+  ///
+  /// This array contains all the macro implementations that are available
+  /// for use when the EventStoreAdapterSupport package is imported.
+  var providingMacros: [any Macro.Type] = [
+    EventSupport.self
+  ]
 }

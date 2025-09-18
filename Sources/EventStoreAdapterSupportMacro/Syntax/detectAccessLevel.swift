@@ -9,18 +9,18 @@ import SwiftSyntax
 /// - Parameter modifiers: The list of declaration modifiers to examine
 /// - Returns: The detected access level, defaulting to `.internal` if none is specified
 func detectAccessLevel(modifiers: DeclModifierListSyntax) -> AccessLevel {
-    for modifier in modifiers {
-        switch modifier.name.tokenKind {
-        case .keyword(.open): return .open
-        case .keyword(.package): return .package
-        case .keyword(.public): return .public
-        case .keyword(.internal): return .internal
-        case .keyword(.fileprivate): return .fileprivate
-        case .keyword(.private): return .private
-        default: continue
-        }
+  for modifier in modifiers {
+    switch modifier.name.tokenKind {
+      case .keyword(.open): return .open
+      case .keyword(.package): return .package
+      case .keyword(.public): return .public
+      case .keyword(.internal): return .internal
+      case .keyword(.fileprivate): return .fileprivate
+      case .keyword(.private): return .private
+      default: continue
     }
-    return .internal
+  }
+  return .internal
 }
 /// Represents the access level of a Swift declaration.
 ///
@@ -35,16 +35,16 @@ func detectAccessLevel(modifiers: DeclModifierListSyntax) -> AccessLevel {
 /// - `fileprivate`: Available within the same source file
 /// - `private`: Available within the same declaration
 enum AccessLevel: String, Sendable, Hashable, Codable, CaseIterable {
-    /// Open access level - most permissive, allows subclassing and overriding across modules
-    case `open`
-    /// Package access level - available within the same package
-    case `package`
-    /// Public access level - available across modules but not subclassable
-    case `public`
-    /// Internal access level - available within the same module (default)
-    case `internal`
-    /// File-private access level - available within the same source file
-    case `fileprivate`
-    /// Private access level - available within the same declaration
-    case `private`
+  /// Open access level - most permissive, allows subclassing and overriding across modules
+  case `open`
+  /// Package access level - available within the same package
+  case `package`
+  /// Public access level - available across modules but not subclassable
+  case `public`
+  /// Internal access level - available within the same module (default)
+  case `internal`
+  /// File-private access level - available within the same source file
+  case `fileprivate`
+  /// Private access level - available within the same declaration
+  case `private`
 }
