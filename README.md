@@ -1,6 +1,6 @@
 # EventStoreAdapterSupport
 
-[![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
+[![Swift](https://img.shields.io/badge/Swift-6.2-orange.svg)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20v15-blue.svg)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/lemo-nade-room/event-store-adapter-swift-support/actions/workflows/swift-test.yaml/badge.svg)](https://github.com/lemo-nade-room/event-store-adapter-swift-support/actions)
