@@ -3,15 +3,15 @@
     "accessLevel" : "fileprivate"
   },
   "indentConditionalCompilationBlocks" : true,
-  "indentSwitchCaseLabels" : true,
+  "indentSwitchCaseLabels" : false,
   "indentation" : {
     "spaces" : 2
   },
   "lineBreakAroundMultilineExpressionChainComponents" : true,
-  "lineBreakBeforeControlFlowKeywords" : true,
+  "lineBreakBeforeControlFlowKeywords" : false,
   "lineBreakBeforeEachArgument" : true,
   "lineBreakBeforeEachGenericRequirement" : true,
-  "lineBreakBetweenDeclarationAttributes" : true,
+  "lineBreakBetweenDeclarationAttributes" : false,
   "lineLength" : 120,
   "maximumBlankLines" : 1,
   "multiElementCollectionTrailingCommas" : true,
