@@ -160,8 +160,8 @@ public struct EventSupport: MemberMacro {
     /// A human-readable description of the error.
     public var description: String {
       switch self {
-        case .onlyApplicableToEnum:
-          "@EventSupport can only be applied to an enum."
+      case .onlyApplicableToEnum:
+        "@EventSupport can only be applied to an enum."
       }
     }
   }
