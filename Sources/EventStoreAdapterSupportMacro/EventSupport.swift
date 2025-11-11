@@ -55,9 +55,10 @@ public struct EventSupport: MemberMacro {
   /// common event data from enum cases.
   ///
   /// - Parameters:
-  ///   - node: The attribute syntax node representing the `@EventSupport` macro
-  ///   - declaration: The declaration group (enum) to which the macro is applied
-  ///   - context: The macro expansion context provided by the compiler
+  ///   - node: The attribute syntax node representing the `@EventSupport` macro.
+  ///   - declaration: The declaration group (enum) to which the macro is applied.
+  ///   - protocols:  Any protocols the declaration conforms to.
+  ///   - context: The macro expansion context provided by the compiler.
   /// - Returns: An array of declaration syntax nodes representing the generated properties
   /// - Throws: `EventSupport.Error.onlyApplicableToEnum` if applied to a non-enum declaration
   public static func expansion(
