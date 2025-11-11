@@ -32,7 +32,7 @@
     "AlwaysUseLiteralForEmptyCollectionInit" : true,
     "AlwaysUseLowerCamelCase" : false,
     "AmbiguousTrailingClosureOverload" : true,
-    "AvoidRetroactiveConformances" : true,
+    "AvoidRetroactiveConformances" : false,
     "BeginDocumentationCommentWithOneLineSummary" : true,
     "DoNotUseSemicolons" : true,
     "DontRepeatTypeInStaticProperties" : true,
