@@ -6,11 +6,11 @@ import SwiftSyntax
 /// for a property, including variable declarations, function parameters, and labeled expressions.
 /// It's primarily used by the `@EventSupport` macro to generate consistent property-related code.
 struct Property: Sendable {
-  /// The access level for this property (e.g., public, internal, private)
+  /// The access level for this property (e.g., public, internal, private).
   var accessLevel: AccessLevel
-  /// The identifier pattern representing the property name
+  /// The identifier pattern representing the property name.
   var identifier: IdentifierPatternSyntax
-  /// The type annotation for this property
+  /// The type annotation for this property.
   var typeAnnotation: TypeAnnotationSyntax
 
   /// Generates a variable declaration syntax for this property.
